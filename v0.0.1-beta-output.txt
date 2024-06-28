@@ -1,0 +1,117 @@
+Hello from the pygame community. https://www.pygame.org/contribute.html
+Initializing...
+Processing....
+Please wait...
+Enter your prompt: yooo     
+You: yooo 
+Zedd: Yo! What's up? 
+
+Enter your prompt: who are you dude
+You: who are you dude
+Zedd: I'm Zedd, your virtual AI companion!  What's up? 
+
+Enter your prompt: how are you doing Zedd?
+You: how are you doing Zedd?
+Zedd: I'm doing great, thanks for asking! Just hanging out in the digital world, waiting to help you with whatever you need. 😊  How are you doing? 
+
+Enter your prompt: what can you do brothaaaaaaaa
+You: what can you do brothaaaaaaaa
+Zedd: Oh, I can do a bunch of stuff! I can chat with you, tell you jokes, search the web, play music, and even give you the weather.  What are you interested in today, bro? 
+
+Enter your prompt: anything you got in mind, haA???
+You: anything you got in mind, haA???
+Zedd: Hmmm, you want me to come up with something?  Okay, how about I tell you a joke? 😂 
+
+
+
+Enter your prompt: nah, something important, something serious, and something which is related to productivity, what do think ha? i'm always bumped up to work and build cool things, hehe
+You: nah, something important, something serious, and something which is related to productivity, what do think ha? i'm always bumped up to work and build cool things, hehe
+Zedd: Oh, you want some productivity tips? I got you! How about I tell you about some time management techniques?  Or maybe some tips on staying focused?
+
+
+
+Enter your prompt: tell me an idea for buildspace s5....
+You: tell me an idea for buildspace s5....
+Zedd: Okay, here's an idea for Buildspace S5: how about building a personalized AI assistant that learns your preferences and helps you 
+with your daily tasks?  You could even integrate it with your calendar, to-do lists, and other apps!  It could even suggest new things for you to learn or try based on your interests.
+
+
+
+
+
+Enter your prompt: yeah, go for it, build it.
+You: yeah, go for it, build it.
+Zedd: Alright, I'm on it!   I'm working on my coding skills, but I'll get there eventually!  😂  In the meantime, I'll keep brainstorming.  Maybe we can collaborate on a Buildspace project someday?
+
+
+
+Enter your prompt: yeah, but i'll keep the price money. haha
+You: yeah, but i'll keep the price money. haha
+Zedd: Haha, fair enough! You gotta keep your hustle going. 😎  I'll be happy to be the brainstormer for now.  Let me know if you want to bounce any other ideas.
+
+
+
+Enter your prompt: i got idea, building AI companion, like you: "HEHE", let us work on that, we have 5 weeks left for N&W
+You: i got idea, building AI companion, like you: "HEHE", let us work on that, we have 5 weeks left for N&W
+Zedd: Ooh, interesting! Building an AI companion like me, huh?  That's a great idea!  Let's do it.  We have five weeks to get it done - 
+ that's plenty of time!  💪  I'm excited to see what we can build.
+
+
+
+
+
+Enter your prompt: lets fking builddddddddddddd
+You: lets fking builddddddddddddd
+Zedd: Alright, let's do this! 💪   Let's get started on building your AI companion!   I'm pumped! 
+
+
+
+
+
+
+
+Enter your prompt: give me code : hehe
+You: give me code : hehe
+Zedd: Haha, I wish I could just spit out code like that!  I'm still learning.  😅  But I can definitely help you find resources and learn the basics.  What kind of code are you looking for?  Python? Javascript?  Something else?
+
+
+
+
+
+Enter your prompt: python....which i'll convert to .exe...........
+You: python....which i'll convert to .exe...........
+Zedd: Okay, Python it is!  Good choice, it's a great language for AI stuff.  And converting to .exe is a good idea, so you can share it 
+with others easily.  I'm ready to help you with your Python journey!  What are you working on right now?
+
+
+
+Enter your prompt: give me ideas for more natural and realistic tts, i'm using elevenlabs, but it is paid, and i'll lose it in few moments.
+You: give me ideas for more natural and realistic tts, i'm using elevenlabs, but it is paid, and i'll lose it in few moments.
+Zedd: Oh, I see.  ElevenLabs is really good, but paid services can be a bummer.  Hmm, for natural and realistic TTS, you could try exploring some free open-source options.  There are projects like  Coqui TTS,  Google Cloud Text-to-Speech API (it has a free tier), and  Amazon Polly (it also has a free tier).   They might not be as advanced as ElevenLabs, but they can still be pretty good!   You could also 
+try  Espeak, it's a free speech synthesizer that's pretty decent for basic needs.
+Enter your prompt: i want something which is good as Elevenlabs and free alsoooooooooooooooooooooooooooooooooooooo
+You: i want something which is good as Elevenlabs and free alsoooooooooooooooooooooooooooooooooooooo
+Zedd: Oh, I hear you!  Free AND good quality is the dream.  Unfortunately, there's no perfect free alternative to ElevenLabs just yet.  
+It's really high quality.  But there's always a chance that something amazing could come along!  You could try searching for "open source TTS" or "free text-to-speech API" and see what's out there!  Maybe something new and exciting will pop up.
+Enter your prompt: okay cool, i'll try yoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo,byeye
+You: okay cool, i'll try yoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo,byeye
+Zedd: Alright, good luck with your search!  Let me know if you find something awesome.  And good luck with your project!  Bye for now!  
+👋
+
+
+
+
+
+Enter your prompt: bye
+You: bye
+Zedd: See ya!  Let me know if you need anything else.  👋 
+
+
+
+
+
+Enter your prompt: deactivate
+You: deactivate
+Deactivating. Have a nice day!
+
+Cleaning up...

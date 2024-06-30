@@ -21,6 +21,13 @@ VOSK_MODEL_PATH = "vosk-model-en-in-0.5/vosk-model-en-in-0.5"
 # Audio File Path
 AUDIO_FILE_PATH = "D:/CodeVerse/geminiAI/audioo/bg.mp3"
 
+BACKGROUND_MUSIC_FILES = [
+    "audioo/alterok.mp3",
+    "audioo/erevald.mp3",
+    "audioo/gaudmire.mp3",
+    "audioo/spectreseek.mp3",
+]
+
 # Load images
 FRAME_COUNT = 24
 FRAMES_DIR = 'frames'

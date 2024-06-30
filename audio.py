@@ -1,7 +1,8 @@
 import pygame
 import time
-import threading
+import random
 pygame.mixer.init()
+current_music_index = -1  
 def ensure_mixer_initialized(func):
     def wrapper(*args, **kwargs):
         if not pygame.mixer.get_init():
@@ -36,3 +37,12 @@ def play_audio_background(file_path, mixer_instance, resume=False):
         pygame.mixer.music.play(-1)  # -1 to loop indefinitely
     else:
         pygame.mixer.music.unpause()
+
+@ensure_mixer_initialized
+def change_background_music(music_files, mixer_instance):
+    global current_music_index
+    if not music_files:
+        return
+    current_music_index = (current_music_index + 1) % len(music_files)
+    next_file = music_files[current_music_index]
+    play_audio_background(next_file, mixer_instance)

@@ -21,15 +21,15 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
 
 def speak_response(text):
-    try:
-        voice = Voice(
-            voice_id='2EiwWnXFnvU5JabPnv8n',
-            settings=VoiceSettings(stability=0.5, similarity_boost=0.7, style=0.0, use_speaker_boost=True)
-        )
-        audio = client.generate(text=text, voice=voice)
-        play(audio)
-    except Exception as e:
-        print(f"Error speaking response: {e}")
+    # try:
+    #     voice = Voice(
+    #         voice_id='2EiwWnXFnvU5JabPnv8n',
+    #         settings=VoiceSettings(stability=0.5, similarity_boost=0.7, style=0.0, use_speaker_boost=True)
+    #     )
+    #     audio = client.generate(text=text, voice=voice)
+    #     play(audio)
+    # except Exception as e:
+    #     print(f"Error speaking response: {e}")
     # try:
     #     stop_speaking = threading.Event()
 
@@ -44,6 +44,7 @@ def speak_response(text):
 
     # except Exception as e:
     #     print(f"Error speaking response: {e}")
+    print("Speaking")
 
 def shorten_response(text, max_length=500):
     if len(text) > max_length:

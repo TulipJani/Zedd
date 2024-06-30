@@ -1,14 +1,15 @@
 import pygame
-from config import AUDIO_FILE_PATH
-from audio import stop_audio
-from chat import get_response_with_prompt
+from config import AUDIO_FILE_PATH, BACKGROUND_MUSIC_FILES
+from audio import stop_audio, change_background_music
+from chat import get_response_with_prompt, switch_persona
 from search import handle_search
 from weather import get_weather
 from utils import terminate_program, open_application, play_song, play_song_on_spotify, google_search, speak_response
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import threading
+from calendar_handler import initialize_calendar, add_event, list_events
 
 # Initialize pygame mixer
 pygame.mixer.init()
@@ -67,10 +68,13 @@ def unpause_music():
     if not pygame.mixer.music.get_busy():
         pygame.mixer.music.unpause()
 
+def change_music():
+    change_background_music(BACKGROUND_MUSIC_FILES, pygame.mixer.music)
+
+
 def main():
     is_music_playing = False
     command_count = 0
-
     # Start reminder thread
     threading.Thread(target=remind_todo, daemon=True).start()
 
@@ -87,6 +91,12 @@ def main():
         if any(command in user_input for command in ["quit", "exit", "sleep", "deactivate"]):
             terminate_program()
             break
+
+        elif user_input.startswith("switch to "):
+            persona_name = user_input.split("switch to ")[1].strip().title()
+            switch_persona(persona_name)
+            print(f"Zedd: Switched to {persona_name}.")
+
 
         elif user_input.startswith("open "):
             app_to_open = user_input[5:].strip()
@@ -176,6 +186,19 @@ def main():
         elif user_input.lower() == "resume music":
             unpause_music()
             print("Zedd: Music playing.")
+        elif user_input.lower() == "change music" :
+            change_music()
+            print("Zedd: Background music changed.")
+            speak_response("Background music changed.")
+
+        elif user_input.startswith("add event to calendar")  or user_input.startswith("add event"):
+            creds=initialize_calendar()
+            add_event(creds)  
+
+        elif user_input.startswith("list events") or user_input.startswith("event details"):
+            creds=initialize_calendar()
+            list_events(creds)  
+
 
         else:
             generated_response = get_response_with_prompt(user_input)

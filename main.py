@@ -10,6 +10,9 @@ from datetime import datetime, timedelta
 import time
 import threading
 from calendar_handler import initialize_calendar, add_event, list_events
+from web_scraper import fetch_news  # Import the fetch_news function
+from pyvirtualdisplay import Display
+from whatsapp_handler import send_whatsapp_message, send_scheduled_whatsapp_message, send_whatsapp_image
 
 # Initialize pygame mixer
 pygame.mixer.init()
@@ -191,13 +194,50 @@ def main():
             print("Zedd: Background music changed.")
             speak_response("Background music changed.")
 
-        elif user_input.startswith("add event to calendar")  or user_input.startswith("add event"):
-            creds=initialize_calendar()
-            add_event(creds)  
+        elif user_input.startswith("add event to calendar") or user_input.startswith("add event"):
+            service = initialize_calendar()
+            add_event(service)  # Pass service object to add_event function
 
         elif user_input.startswith("list events") or user_input.startswith("event details"):
-            creds=initialize_calendar()
-            list_events(creds)  
+            service = initialize_calendar()
+            list_events(service) 
+
+        elif user_input.lower().startswith(("fetch news", "get news", "what's the news")):
+            print("Zedd: Fetching the latest news. Please wait...")
+            news = fetch_news()
+            if news:
+                print("Zedd: Here are the top headlines in various categories:")
+                for category, headlines in news.items():
+                    print(f"\n{category}:")
+                    for i, headline in enumerate(headlines, 1):
+                        print(f"{i}. {headline}")
+                    speak_response(f"Top headline in {category}: {headlines[0]}")
+            else:
+                print("Zedd: I'm sorry, I couldn't fetch any news at the moment.")
+                speak_response("I'm sorry, I couldn't fetch any news at the moment.")
+
+        elif user_input.startswith("send whatsapp message"):
+            parts = user_input.split(maxsplit=4)
+            phone_no = parts[3]
+            message = parts[4]
+            send_whatsapp_message(phone_no, message)
+            
+        elif user_input.startswith("schedule whatsapp message"):
+            parts = user_input.split(maxsplit=5)
+            phone_no = parts[3]
+            time_info = parts[4]
+            message = parts[5]
+            time_parts = time_info.split(":")
+            time_hour = int(time_parts[0])
+            time_min = int(time_parts[1])
+            send_scheduled_whatsapp_message(phone_no, message, time_hour, time_min)
+        
+        elif user_input.startswith("send whatsapp image"):
+            parts = user_input.split(maxsplit=5)
+            phone_no = parts[3]
+            image_path = parts[4]
+            caption = parts[5] if len(parts) > 5 else ""
+            send_whatsapp_image(phone_no, image_path, caption)
 
 
         else:

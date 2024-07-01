@@ -19,7 +19,7 @@ CITY_NAME = 'Ahmedabad'
 VOSK_MODEL_PATH = "vosk-model-en-in-0.5/vosk-model-en-in-0.5"
 
 # Audio File Path
-AUDIO_FILE_PATH = "D:/CodeVerse/geminiAI/audioo/bg.mp3"
+AUDIO_FILE_PATH = "audioo/spectreseek.mp3"
 
 BACKGROUND_MUSIC_FILES = [
     "audioo/alterok.mp3",

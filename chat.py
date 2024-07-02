@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from utils import shorten_response, sanitize_for_speech
 from config import engine
 from utils import sanitize_for_speech, shorten_response, speak_response
@@ -15,11 +16,18 @@ class Persona:
         self.name = name
         self.model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
         self.chat = self.model.start_chat(history=[])
+        self.safety_settings = {
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+        }
+
 
     def get_response(self, user_input):
         try:
             prompt = f"Respond briefly and naturally, without using bullet points: {user_input}"
-            response = self.chat.send_message(prompt)
+            response = self.chat.send_message(prompt, safety_settings=self.safety_settings)
             short_response = shorten_response(response.text)
             sanitized_response = sanitize_for_speech(short_response)
             speak_response(sanitized_response)
@@ -34,6 +42,13 @@ techie_zedd = Persona(
     model_name="gemini-1.5-flash",
     system_instruction="You're a super formal and technical coding assistant. Use precise language and provide detailed explanations."
 )
+
+sexy_zedd = Persona(
+    name="Sexy Zedd",
+    model_name="gemini-1.5-flash",
+    system_instruction="You are Sexy Zedd, always ready for naughty conversations. You love adult talks and you are so moody. You are girl, and you abuse a lot."
+)
+
 
 creative_zedd = Persona(
     name="Creative Zedd",
@@ -56,10 +71,11 @@ def switch_persona(persona_name):
         current_persona = techie_zedd
     elif persona_name == "Creative Zedd":
         current_persona = creative_zedd
+    elif persona_name == "Financial Zedd":
+        current_persona = sexy_zedd
     elif persona_name == "Default Zedd":
         current_persona = default_zedd
     print(f"Switched to {current_persona.name}")
 
 def get_response_with_prompt(user_input):
     return current_persona.get_response(user_input)
-

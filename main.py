@@ -5,21 +5,17 @@ from chat import get_response_with_prompt, switch_persona
 from search import handle_search
 from weather import get_weather
 from utils import terminate_program, open_application, play_song, play_song_on_spotify, google_search, speak_response
-import sys
+import re
 from datetime import datetime, timedelta
 import time
 import threading
 from calendar_handler import initialize_calendar, add_event, list_events
-from web_scraper import fetch_news  # Import the fetch_news function
-from pyvirtualdisplay import Display
-from whatsapp_handler import send_whatsapp_message, send_scheduled_whatsapp_message, send_whatsapp_image
+from web_scraper import fetch_news
+from whatsapp_handler import send_whatsapp_message
 
-# Initialize pygame mixer
 pygame.mixer.init()
 
-# To-do list file
 TODO_FILE = "todo.txt"
-
 def add_to_todo(task):
     with open(TODO_FILE, "a") as file:
         file.write(f"{task}\n")
@@ -51,7 +47,8 @@ def mark_task_completed(task_index):
 
 def remind_todo():
     while True:
-        time.sleep(60 * 30)  # Remind every 30 minutes
+        time.sleep(60 * 30)
+
         tasks = get_todo_list()
         if tasks:
             pending_tasks = "\n".join(f"- {task}" for task in tasks)
@@ -60,7 +57,8 @@ def remind_todo():
 
 def play_music(file_path):
     pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play(-1)  # -1 to loop indefinitely
+    pygame.mixer.music.play(-1)
+
     pygame.mixer.music.set_volume(.1)
 
 def pause_music():
@@ -74,14 +72,37 @@ def unpause_music():
 def change_music():
     change_background_music(BACKGROUND_MUSIC_FILES, pygame.mixer.music)
 
-
+contacts = {
+    "bhai": "+919428693489",
+    "papa": "+918000114615",
+    "mummy": "+919428718551",
+    "prachi": "+12042152409",
+}
+def process_input(user_input):
+    if user_input.startswith("send me"):
+        topic = user_input[len("send me "):]
+        response = get_response_with_prompt(topic)
+        send_whatsapp_message("+919081321913", response)
+    elif user_input.startswith("send"):
+        parts = user_input.split(maxsplit=3)
+        if len(parts) == 4 and parts[2] == "to":
+            topic = parts[1]
+            contact_name = parts[3]
+            if contact_name in contacts:
+                phone_no = contacts[contact_name]
+                response = get_response_with_prompt(topic)
+                send_whatsapp_message(phone_no, response)
+            else:
+                print(f"Contact {contact_name} not found in contacts.")
+        else:
+            print("Error: Please provide the correct command format like 'send topic to contact name'.")
 def main():
     is_music_playing = False
     command_count = 0
-    # Start reminder thread
+
     threading.Thread(target=remind_todo, daemon=True).start()
 
-    # Start playing background music
+
     play_music(AUDIO_FILE_PATH)
     is_music_playing = True
 
@@ -196,7 +217,8 @@ def main():
 
         elif user_input.startswith("add event to calendar") or user_input.startswith("add event"):
             service = initialize_calendar()
-            add_event(service)  # Pass service object to add_event function
+            add_event(service)
+
 
         elif user_input.startswith("list events") or user_input.startswith("event details"):
             service = initialize_calendar()
@@ -216,29 +238,8 @@ def main():
                 print("Zedd: I'm sorry, I couldn't fetch any news at the moment.")
                 speak_response("I'm sorry, I couldn't fetch any news at the moment.")
 
-        elif user_input.startswith("send whatsapp message"):
-            parts = user_input.split(maxsplit=4)
-            phone_no = parts[3]
-            message = parts[4]
-            send_whatsapp_message(phone_no, message)
-            
-        elif user_input.startswith("schedule whatsapp message"):
-            parts = user_input.split(maxsplit=5)
-            phone_no = parts[3]
-            time_info = parts[4]
-            message = parts[5]
-            time_parts = time_info.split(":")
-            time_hour = int(time_parts[0])
-            time_min = int(time_parts[1])
-            send_scheduled_whatsapp_message(phone_no, message, time_hour, time_min)
-        
-        elif user_input.startswith("send whatsapp image"):
-            parts = user_input.split(maxsplit=5)
-            phone_no = parts[3]
-            image_path = parts[4]
-            caption = parts[5] if len(parts) > 5 else ""
-            send_whatsapp_image(phone_no, image_path, caption)
-
+        elif user_input.startswith("send") :
+            process_input(user_input=user_input)
 
         else:
             generated_response = get_response_with_prompt(user_input)

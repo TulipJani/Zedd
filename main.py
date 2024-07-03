@@ -1,19 +1,78 @@
 import pygame
 from config import AUDIO_FILE_PATH, BACKGROUND_MUSIC_FILES
-from audio import stop_audio, change_background_music
+from audio import change_background_music
 from chat import get_response_with_prompt, switch_persona
 from search import handle_search
 from weather import get_weather
 from utils import terminate_program, open_application, play_song, play_song_on_spotify, google_search, speak_response
-import re
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 import threading
 from calendar_handler import initialize_calendar, add_event, list_events
 from web_scraper import fetch_news
 from whatsapp_handler import send_whatsapp_message
+import sys
+import random
+import shutil
+from colorama import Fore, init
+from blessed import Terminal
 
+class NullWriter(object):
+    def write(self, arg):
+        pass
+
+sys.stdout = NullWriter()
+sys.stdout = sys.__stdout__
+init(autoreset=True)
 pygame.mixer.init()
+ascii_art = """
+                                                           
+###### ###### #####  #####     #    # ###### #####  ###### 
+    #  #      #    # #    #    #    # #      #    # #      
+   #   #####  #    # #    #    ###### #####  #    # #####  
+  #    #      #    # #    #    #    # #      #####  #      
+ #     #      #    # #    #    #    # #      #   #  #      
+###### ###### #####  #####     #    # ###### #    # ###### 
+                                                           
+
+"""
+def show_loading_animation():
+    total_length = 50
+    
+    terminal_width = shutil.get_terminal_size().columns
+
+    for percent in range(101):
+        bar = ('#' * (percent * total_length // 100)).ljust(total_length)
+        speed = random.uniform(10, 50)
+        
+        progress = f"Progress: |{bar}| {percent}%"
+        speed_info = f"Speed: {speed:.2f} KB/s"
+
+
+
+        sys.stdout.write(f"\r{progress} {speed_info}".ljust(terminal_width))
+        sys.stdout.flush()
+        time.sleep(0.1)
+        
+
+    print("\n")
+    
+def help_command():
+    help_text = """
+    Available Commands:
+    - help: Display this help message
+    - open [app_name]: Open a specified application
+    - play music: Play relaxing music on YouTube
+    - weather: Get the current weather
+    - add [task]: Add a task to the to-do list
+    - schedule: Display today's schedule
+    - send [message] to [contact]: Send a WhatsApp message
+    - search [query] on [platform]: Search on specified platform
+    - play [playlist]: Play a playlist on Spotify
+    - news: Get the latest news
+    - switch to [persona]: Switch to a different assistant persona
+    """
+    print(Fore.GREEN + Fore.CYAN + help_text)
 
 TODO_FILE = "todo.txt"
 def add_to_todo(task):
@@ -53,7 +112,7 @@ def remind_todo():
         if tasks:
             pending_tasks = "\n".join(f"- {task}" for task in tasks)
             speak_response("You have pending tasks in your to-do list.")
-            print(f"Zedd: You have pending tasks:\n{pending_tasks}")
+            print(Fore.GREEN + f"Zedd: You have pending tasks:\n{pending_tasks}")
 
 def play_music(file_path):
     pygame.mixer.music.load(file_path)
@@ -93,9 +152,9 @@ def process_input(user_input):
                 response = get_response_with_prompt(topic)
                 send_whatsapp_message(phone_no, response)
             else:
-                print(f"Contact {contact_name} not found in contacts.")
+                print(Fore.GREEN + f"Contact {contact_name} not found in contacts.")
         else:
-            print("Error: Please provide the correct command format like 'send topic to contact name'.")
+            print(Fore.GREEN + "Error: Please provide the correct command format like 'send topic to contact name'.")
 def main():
     is_music_playing = False
     command_count = 0
@@ -105,8 +164,9 @@ def main():
 
     play_music(AUDIO_FILE_PATH)
     is_music_playing = True
+    print(Fore.YELLOW + ascii_art)
 
-    print("Zedd: Hi there, I'm Zedd.")
+    print(Fore.GREEN + "Zedd: Hi there, I'm Zedd.")
     while True:
         user_input = input("You: ")
 
@@ -119,7 +179,7 @@ def main():
         elif user_input.startswith("switch to "):
             persona_name = user_input.split("switch to ")[1].strip().title()
             switch_persona(persona_name)
-            print(f"Zedd: Switched to {persona_name}.")
+            print(Fore.GREEN + f"Zedd: Switched to {persona_name}.")
 
 
         elif user_input.startswith("open "):
@@ -128,11 +188,11 @@ def main():
 
         elif "tell me about the weather" in user_input.lower() or "what's the weather today" in user_input.lower():
             response = get_weather()
-            print(f"Zedd: {response}")
+            print(Fore.GREEN + f"Zedd: {response}")
 
         elif "what time is it" in user_input or "current time" in user_input:
             current_time = datetime.now().strftime("%H:%M:%S")
-            print(f"Zedd: The current time is {current_time}")
+            print(Fore.GREEN + f"Zedd: The current time is {current_time}")
             speak_response(f"The current time is {current_time}")
 
         elif user_input.startswith(("play", "stream", "start", "broadcast")):
@@ -148,9 +208,9 @@ def main():
                     elif platform == "youtube":
                         play_song(song_title)
                     else:
-                        print(f"Unsupported platform: {platform}. Supported platforms are 'spotify' and 'youtube'.")
+                        print(Fore.GREEN + f"Unsupported platform: {platform}. Supported platforms are 'spotify' and 'youtube'.")
                 else:
-                    print("Invalid command format. Please specify the song title and platform.")
+                    print(Fore.GREEN + "Invalid command format. Please specify the song title and platform.")
             else:
                 play_song(song_info)
 
@@ -160,59 +220,59 @@ def main():
 
         elif user_input.startswith("search for ") or user_input.startswith("search "):
             results = handle_search(user_input)
-            print(f"Zedd: {results}")
+            print(Fore.GREEN + f"Zedd: {results}")
 
         elif user_input.startswith("add ") and "on my todo" in user_input:
             task = user_input[4:user_input.index("on my todo")].strip()
             add_to_todo(task)
-            print(f"Zedd: Added '{task}' to your to-do list.")
+            print(Fore.GREEN + f"Zedd: Added '{task}' to your to-do list.")
 
         elif "what's in my todo" in user_input.lower() or "what in my todo" in user_input.lower():
             pending_tasks, completed_tasks = get_todo_list()
             if pending_tasks:
                 tasks_text = "\n".join(f"{i+1}. {task.strip()}" for i, task in enumerate(pending_tasks))
-                print(f"Zedd: You have pending tasks:\n{tasks_text}")
+                print(Fore.GREEN + f"Zedd: You have pending tasks:\n{tasks_text}")
                 speak_response(f"You have pending tasks. {tasks_text}")
             else:
-                print("Zedd: Your to-do list is empty.")
+                print(Fore.GREEN + "Zedd: Your to-do list is empty.")
                 speak_response("Your to-do list is empty.")
 
         elif user_input.startswith("complete task "):
             try:
                 task_index = int(user_input.split()[2]) - 1
                 mark_task_completed(task_index)
-                print(f"Zedd: Marked task {task_index + 1} as completed.")
+                print(Fore.GREEN + f"Zedd: Marked task {task_index + 1} as completed.")
                 speak_response(f"Zedd: Marked task {task_index + 1} as completed.")
             except IndexError:
-                print("Zedd: Task index out of range.")
+                print(Fore.GREEN + "Zedd: Task index out of range.")
                 speak_response("Zedd: Task index out of range.")
             except ValueError:
-                print("Zedd: Invalid command format. Use 'complete task <task number>'.")
+                print(Fore.GREEN + "Zedd: Invalid command format. Use 'complete task <task number>'.")
                 speak_response("Zedd: Invalid command format. Use 'complete task <task number>'.")
 
         elif user_input.startswith("delete task "):
             try:
                 task_index = int(user_input.split()[2]) - 1
                 delete_task(task_index)
-                print(f"Zedd: Deleted task {task_index + 1}.")
+                print(Fore.GREEN + f"Zedd: Deleted task {task_index + 1}.")
                 speak_response(f"Zedd: Deleted task {task_index + 1}.")
             except IndexError:
-                print("Zedd: Task index out of range.")
+                print(Fore.GREEN + "Zedd: Task index out of range.")
                 speak_response("Zedd: Task index out of range.")
             except ValueError:
-                print("Zedd: Invalid command format. Use 'delete task <task number>'.")
+                print(Fore.GREEN + "Zedd: Invalid command format. Use 'delete task <task number>'.")
                 speak_response("Zedd: Invalid command format. Use 'delete task <task number>'.")
 
         elif user_input.lower() == "pause music":
             pause_music()
-            print("Zedd: Music paused.")
+            print(Fore.GREEN + "Zedd: Music paused.")
 
         elif user_input.lower() == "resume music":
             unpause_music()
-            print("Zedd: Music playing.")
+            print(Fore.GREEN + "Zedd: Music playing.")
         elif user_input.lower() == "change music" :
             change_music()
-            print("Zedd: Background music changed.")
+            print(Fore.GREEN + "Zedd: Background music changed.")
             speak_response("Background music changed.")
 
         elif user_input.startswith("add event to calendar") or user_input.startswith("add event"):
@@ -225,17 +285,17 @@ def main():
             list_events(service) 
 
         elif user_input.lower().startswith(("fetch news", "get news", "what's the news")):
-            print("Zedd: Fetching the latest news. Please wait...")
+            print(Fore.GREEN + "Zedd: Fetching the latest news. Please wait...")
             news = fetch_news()
             if news:
-                print("Zedd: Here are the top headlines in various categories:")
+                print(Fore.GREEN + "Zedd: Here are the top headlines in various categories:")
                 for category, headlines in news.items():
-                    print(f"\n{category}:")
+                    print(Fore.GREEN + f"\n{category}:")
                     for i, headline in enumerate(headlines, 1):
-                        print(f"{i}. {headline}")
+                        print(Fore.GREEN + f"{i}. {headline}")
                     speak_response(f"Top headline in {category}: {headlines[0]}")
             else:
-                print("Zedd: I'm sorry, I couldn't fetch any news at the moment.")
+                print(Fore.GREEN + "Zedd: I'm sorry, I couldn't fetch any news at the moment.")
                 speak_response("I'm sorry, I couldn't fetch any news at the moment.")
 
         elif user_input.startswith("send") :
@@ -243,20 +303,36 @@ def main():
 
         else:
             generated_response = get_response_with_prompt(user_input)
-            print(f"Zedd: {generated_response}")
+            print(Fore.GREEN + f"Zedd: {generated_response}")
 
         if command_count % 10 == 0:
             pending_tasks, completed_tasks = get_todo_list()
             if pending_tasks:
                 tasks_text = "\n".join(f"- {task}" for task in pending_tasks)
-                print(f"Zedd: You have pending tasks:\n{tasks_text}")
+                print(Fore.GREEN + f"Zedd: You have pending tasks:\n{tasks_text}")
                 speak_response(f"You have pending tasks. {tasks_text}")
             else:
-                print("Zedd: Your to-do list is empty.")
+                print(Fore.GREEN + "Zedd: Your to-do list is empty.")
                 speak_response("Your to-do list is empty.")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        terminate_program()
+    terminal = Terminal()
+
+
+    print(terminal.clear())
+    with terminal.hidden_cursor(), terminal.cbreak():
+        print(Fore.YELLOW + ascii_art)
+        for i in range(2):
+            sys.stdout.write(Fore.GREEN + f"\rZedd: Loading{'.' * i}{' ' * (4 - i)}")
+            sys.stdout.flush()
+            time.sleep(0.5)
+            for j in range(i):
+                show_loading_animation()
+                sys.stdout.write(Fore.GREEN + "Loading Succesful")
+                time.sleep(1)
+            time.sleep(3)
+        print(terminal.clear())
+
+    
+    
+    main()

@@ -1,6 +1,8 @@
 import urllib.parse
 import webbrowser
-from utils import speak_response
+
+
+
 def search_flipkart(query):
     url = f"https://www.flipkart.com/search?q={urllib.parse.quote(query)}"
     webbrowser.open(url)
@@ -27,7 +29,7 @@ def search_twitter(query):
     return [("Twitter Search", url)]
 
 def search_instagram(query):
-    url = f"https://www.instagram.com/web/search/topsearch/?query={urllib.parse.quote(query)}"
+    url = f"https://www.instagram.com/{urllib.parse.quote(query)}/"
     webbrowser.open(url)
     return [("Instagram Search", url)]
 
@@ -51,7 +53,6 @@ def search_bing(query):
     webbrowser.open(url)
     return [("Bing Search", url)]
 
-# Add more search functions for other platforms as needed
 
 def parse_input(user_input):
     parts = user_input.lower().strip().split(" on ")
@@ -87,7 +88,7 @@ def handle_search(user_input):
     search_function = search_functions.get(platform)
     if search_function:
         search_function(query)
-        speak_response(f"Yes sir...")
-        speak_response(f"Searching for '{query}' on {platform}...")
+        return f"Here's what i've found."
     else:
-        return "Platform not supported. Please choose a valid platform."
+        return f"Unsupported platform: {platform}."
+

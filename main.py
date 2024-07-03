@@ -4,7 +4,7 @@ from audio import change_background_music
 from chat import get_response_with_prompt, switch_persona
 from search import handle_search
 from weather import get_weather
-from utils import terminate_program, open_application, play_song, play_song_on_spotify, google_search, speak_response
+from utils import terminate_program, open_application, play_video_on_youtube, play_song_on_spotify, google_search, speak_response
 from datetime import datetime
 import time
 import threading
@@ -226,19 +226,19 @@ def main():
             if "on" in song_info:
                 parts = list(map(str.strip, song_info.rsplit("on", 1)))
                 if len(parts) == 2:
-                    song_title, platform = parts
+                    title, platform = parts
                     platform = platform.lower()
 
                     if platform == "spotify":
-                        play_song_on_spotify(song_title)
+                        play_song_on_spotify(title)
                     elif platform == "youtube":
-                        play_song(song_title)
+                        play_video_on_youtube(title)
                     else:
                         print(Fore.GREEN + f"Unsupported platform: {platform}. Supported platforms are 'spotify' and 'youtube'.")
                 else:
                     print(Fore.GREEN + "Invalid command format. Please specify the song title and platform.")
             else:
-                play_song(song_info)
+                play_video_on_youtube(song_info)
 
         elif user_input.startswith("google "):
             query = user_input[7:]

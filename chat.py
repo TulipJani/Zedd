@@ -1,9 +1,7 @@
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from utils import shorten_response, sanitize_for_speech
-from config import engine
 from utils import sanitize_for_speech, shorten_response, speak_response
-import threading
 import os
 from dotenv import load_dotenv
 

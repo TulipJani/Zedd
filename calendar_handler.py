@@ -1,6 +1,6 @@
 import os
 import pickle
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -36,13 +36,10 @@ def preprocess_date(date_str):
 
 def parse_date_time(date_str, timezone):
     try:
-        # Preprocess the date string to handle "today" and "tomorrow"
         date_str = preprocess_date(date_str)
         
-        # Parse the date string
         date_obj = parse(date_str)
         
-        # Localize to the specified timezone
         date_obj = timezone.localize(date_obj)
         
         return date_obj
@@ -54,17 +51,11 @@ def add_event(service):
     event_title = input("Enter event title: ")
     start_date_str = input("Enter start date and time (e.g., 'today 7pm'): ")
     end_date_str = input("Enter end date and time (e.g., 'today 8pm'): ")
-
-    # Set timezone
     timezone = pytz.timezone('Asia/Kolkata')
-
-    # Parse start date
     start_date = parse_date_time(start_date_str, timezone)
     if not start_date:
         print(f"Failed to parse start date: {start_date_str}")
         return
-
-    # Parse end date if provided, otherwise set to 1 hour after start
     if end_date_str:
         end_date = parse_date_time(end_date_str, timezone)
         if not end_date:

@@ -38,13 +38,13 @@ ascii_art = """
 """
 def show_loading_animation():
     total_length = 50
-    
+
     terminal_width = shutil.get_terminal_size().columns
 
     for percent in range(101):
         bar = ('#' * (percent * total_length // 100)).ljust(total_length)
         speed = random.uniform(10, 50)
-        
+
         progress = f"Progress: |{bar}| {percent}%"
         speed_info = f"Speed: {speed:.2f} KB/s"
 
@@ -53,26 +53,52 @@ def show_loading_animation():
         sys.stdout.write(f"\r{progress} {speed_info}".ljust(terminal_width))
         sys.stdout.flush()
         time.sleep(0.1)
-        
+
 
     print("\n")
-    
-def help_command():
-    help_text = """
-    Available Commands:
-    - help: Display this help message
-    - open [app_name]: Open a specified application
-    - play music: Play relaxing music on YouTube
-    - weather: Get the current weather
-    - add [task]: Add a task to the to-do list
-    - schedule: Display today's schedule
-    - send [message] to [contact]: Send a WhatsApp message
-    - search [query] on [platform]: Search on specified platform
-    - play [playlist]: Play a playlist on Spotify
-    - news: Get the latest news
-    - switch to [persona]: Switch to a different assistant persona
-    """
-    print(Fore.GREEN + Fore.CYAN + help_text)
+
+def handle_help_command():
+    print(Fore.GREEN + "\nAvailable Commands:")
+
+    # Help command
+    print(Fore.GREEN + "    - help: Display this help message")
+
+    # Open command
+    print(Fore.GREEN + "    - open [app_name]: Open a specified application")
+    print(Fore.GREEN + "      Example: 'open Chrome'")
+
+    # Play music command
+    print(Fore.GREEN + "    - play music: Play relaxing music on YouTube")
+
+    # Weather command
+    print(Fore.GREEN + "    - weather: Get the current weather")
+
+    # Add task to to-do list command
+    print(Fore.GREEN + "    - add [task]: Add a task to the to-do list")
+    print(Fore.GREEN + "      Example: 'add Complete homework on Math'")
+
+    # Schedule command
+    print(Fore.GREEN + "    - schedule: Display today's schedule")
+
+    # Send WhatsApp message command
+    print(Fore.GREEN + "    - send [message] to [contact]: Send a WhatsApp message")
+    print(Fore.GREEN + "      Example: 'send Hi there! to Mom'")
+
+    # Search command
+    print(Fore.GREEN + "    - search [query] on [platform]: Search on specified platform")
+    print(Fore.GREEN + "      Example: 'search Python tutorials on YouTube'")
+
+    # Play playlist command
+    print(Fore.GREEN + "    - play [playlist]: Play a playlist on Spotify")
+    print(Fore.GREEN + "      Example: 'play Chill Out playlist'")
+
+    # News command
+    print(Fore.GREEN + "    - news: Get the latest news")
+
+    # Switch persona command
+    print(Fore.GREEN + "    - switch to [persona]: Switch to a different assistant persona")
+    print(Fore.GREEN + "      Example: 'switch to Creative Zedd'")
+
 
 TODO_FILE = "todo.txt"
 def add_to_todo(task):
@@ -167,6 +193,7 @@ def main():
     print(Fore.YELLOW + ascii_art)
 
     print(Fore.GREEN + "Zedd: Hi there, I'm Zedd.")
+    handle_help_command()
     while True:
         user_input = input("You: ")
 
@@ -193,7 +220,6 @@ def main():
         elif "what time is it" in user_input or "current time" in user_input:
             current_time = datetime.now().strftime("%H:%M:%S")
             print(Fore.GREEN + f"Zedd: The current time is {current_time}")
-            speak_response(f"The current time is {current_time}")
 
         elif user_input.startswith(("play", "stream", "start", "broadcast")):
             command, song_info = user_input.split(maxsplit=1)

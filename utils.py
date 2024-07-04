@@ -13,6 +13,10 @@ from elevenlabs.client import ElevenLabs
 import os
 from dotenv import load_dotenv
 
+
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
@@ -65,10 +69,10 @@ def sanitize_for_speech(text):
     sanitized_text = re.sub(r'[^A-Za-z0-9\s.,!?\'"]+', '', sanitized_text)
     return sanitized_text    
 
-def terminate_program():
+def terminate_program(api_key):
     print("Deactivating. Have a nice day!")
-    speak_response("Deactivating. Have a nice day!")
-    pygame.mixer.music.stop()  
+    pygame.mixer.music.stop() 
+    speak_response("Bye! See ya later...Whohoho", api_key=api_key)
     cleanup()  
     sys.exit(0)  
 

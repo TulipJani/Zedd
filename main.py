@@ -193,7 +193,6 @@ def main():
     print(Fore.YELLOW + ascii_art)
 
     print(Fore.GREEN + "Zedd: Hi there, I'm Zedd.")
-    handle_help_command()
     while True:
         user_input = input("You: ")
 
@@ -202,7 +201,10 @@ def main():
         if any(command in user_input for command in ["quit", "exit", "sleep", "deactivate"]):
             terminate_program()
             break
-
+        
+        elif user_input == "help":
+            handle_help_command()
+                   
         elif user_input.startswith("switch to "):
             persona_name = user_input.split("switch to ")[1].strip().title()
             switch_persona(persona_name)
@@ -341,8 +343,15 @@ def main():
                 print(Fore.GREEN + "Zedd: Your to-do list is empty.")
                 speak_response("Your to-do list is empty.")
 
+def is_interactive():
+    return sys.stdin.isatty() and sys.stdout.isatty()
+    
 if __name__ == "__main__":
-    terminal = Terminal()
+
+    if is_interactive():
+        terminal = Terminal()
+    else:
+        terminal = None
 
 
     print(terminal.clear())

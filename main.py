@@ -18,7 +18,7 @@ from colorama import Fore, init
 from blessed import Terminal
 
 class NullWriter(object):
-    def write(self, arg):
+    def write(self, arg):   
         pass
 
 sys.stdout = NullWriter()

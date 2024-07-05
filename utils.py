@@ -8,21 +8,22 @@ from config import engine
 import urllib
 from elevenlabs import Voice, VoiceSettings, play
 from elevenlabs.client import ElevenLabs
-
-
-import os
 from dotenv import load_dotenv
 
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+def get_or_set_elevendlabs_api_key():
+    ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+    if ELEVENLABS_API_KEY is None:
+        api_key = input("Enter your ElevenLabs API key: ")
+        with open('.env', 'w') as env_file:
+            env_file.write(f"ELEVENLABS_API_KEY={api_key}\n")
+        load_dotenv()  
+        ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+    return ELEVENLABS_API_KEY
 
 def speak_response(text):
-    
+    ELEVENLABS_API_KEY = get_or_set_elevendlabs_api_key()
+    client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+
     try:
         voice = Voice(
             voice_id='2EiwWnXFnvU5JabPnv8n',
@@ -32,6 +33,7 @@ def speak_response(text):
         play(audio)
     except Exception as e:
         print(f"Error speaking response: {e}")
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -69,10 +71,10 @@ def sanitize_for_speech(text):
     sanitized_text = re.sub(r'[^A-Za-z0-9\s.,!?\'"]+', '', sanitized_text)
     return sanitized_text    
 
-def terminate_program(api_key):
+def terminate_program():
     print("Deactivating. Have a nice day!")
     pygame.mixer.music.stop() 
-    speak_response("Bye! See ya later...Whohoho", api_key=api_key)
+    speak_response("Bye! See ya later...Whohoho")
     cleanup()  
     sys.exit(0)  
 

@@ -74,7 +74,7 @@ def sanitize_for_speech(text):
 def terminate_program():
     print("Deactivating. Have a nice day!")
     pygame.mixer.music.stop() 
-    speak_response("Bye! See ya later...Whohoho")
+    speak_response("Bye! See ya later...")
     cleanup()  
     sys.exit(0)  
 

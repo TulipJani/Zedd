@@ -1,5 +1,7 @@
 import pygame
 import time
+import speech_recognition as sr  # Add this import statement
+
 pygame.mixer.init()
 current_music_index = -1  
 def ensure_mixer_initialized(func):
@@ -45,3 +47,34 @@ def change_background_music(music_files, mixer_instance):
     current_music_index = (current_music_index + 1) % len(music_files)
     next_file = music_files[current_music_index]
     play_audio_background(next_file, mixer_instance)
+
+
+def speechRecognition():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source, duration=2)
+        recognizer.dynamic_energy_threshold = True
+        recognizer.energy_threshold = 3000  # Lowered threshold for better sensitivity
+        print("Listening...")
+        audio = recognizer.listen(source, timeout=5, phrase_time_limit=10)
+    
+    try:
+        # Try recognizing with Indian English
+        text = recognizer.recognize_google(audio, language="en-IN")
+        print("You said:", text)
+        return text
+    except sr.UnknownValueError:
+        # If Indian English fails, try with general English
+        try:
+            text = recognizer.recognize_google(audio)
+            print("You said:", text)
+            return text
+        except sr.UnknownValueError:
+            print("Sorry, I couldn't understand that. Could you please repeat?")
+            return ""
+    except sr.RequestError as e:
+        print("Could not request results; {0}".format(e))
+        return ""
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return ""

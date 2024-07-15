@@ -15,8 +15,3 @@ BACKGROUND_MUSIC_FILES = [
     "audioo/gaudmire.mp3",
     "audioo/spectreseek.mp3",
 ]
-
-for voice in engine.getProperty('voices'):
-    if "Microsoft David Desktop - English (United States)" in voice.name:
-        engine.setProperty('voice', voice.id)
-        break

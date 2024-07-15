@@ -8,6 +8,7 @@ from dateutil.parser import parse, ParserError
 import pytz
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
+ist = pytz.timezone('Asia/Kolkata')
 
 def initialize_calendar():
     creds = None
@@ -26,63 +27,69 @@ def initialize_calendar():
     return service
 
 def preprocess_date(date_str):
-    now = datetime.now()
-    if "today" in date_str.lower():
-        date_str = date_str.lower().replace("today", now.strftime("%Y-%m-%d"))
-    elif "tomorrow" in date_str.lower():
-        tomorrow = now + timedelta(days=1)
-        date_str = date_str.lower().replace("tomorrow", tomorrow.strftime("%Y-%m-%d"))
-    return date_str
+    return date_str.strip()
 
 def parse_date_time(date_str, timezone):
     try:
         date_str = preprocess_date(date_str)
         
-        date_obj = parse(date_str)
+        # Remove timezone information if present
+        if '+' in date_str:
+            date_str = date_str.split('+')[0]
         
-        date_obj = timezone.localize(date_obj)
+        # Parse the date string
+        date_obj = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
         
         return date_obj
-    except (ParserError, ValueError, OverflowError) as e:
+    except (ValueError, OverflowError) as e:
         print(f"Error parsing date: {e}")
         return None
-
+    
 def add_event(service):
     event_title = input("Enter event title: ")
-    start_date_str = input("Enter start date and time (e.g., 'today 7pm'): ")
-    end_date_str = input("Enter end date and time (e.g., 'today 8pm'): ")
-    timezone = pytz.timezone('Asia/Kolkata')
-    start_date = parse_date_time(start_date_str, timezone)
-    if not start_date:
-        print(f"Failed to parse start date: {start_date_str}")
+    start_date_str = input("Enter start date and time in IST (e.g., '2024-07-12 22:00:00'): ")
+    end_date_str = input("Enter end date and time in IST (e.g., '2024-07-12 23:00:00', leave empty for default): ")
+    
+    # Parse start date
+    try:
+        ist = pytz.timezone('Asia/Kolkata')
+        start_date = ist.localize(datetime.strptime(start_date_str, "%Y-%m-%d %H:%M:%S"))
+        start_date_utc = start_date.astimezone(pytz.UTC)
+    except ValueError:
+        print(f"Failed to parse start date and time: {start_date_str}")
         return
+    
+    # Parse end date or set default
     if end_date_str:
-        end_date = parse_date_time(end_date_str, timezone)
-        if not end_date:
-            print(f"Failed to parse end date: {end_date_str}")
+        try:
+            end_date = ist.localize(datetime.strptime(end_date_str, "%Y-%m-%d %H:%M:%S"))
+            end_date_utc = end_date.astimezone(pytz.UTC)
+        except ValueError:
+            print(f"Failed to parse end date and time: {end_date_str}")
             return
     else:
-        end_date = start_date + timedelta(hours=1)
+        end_date_utc = start_date_utc + timedelta(hours=1)
 
     event = {
         'summary': event_title,
         'start': {
-            'dateTime': start_date.isoformat(),
-            'timeZone': str(timezone),
+            'dateTime': start_date_utc.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            'timeZone': 'UTC',
         },
         'end': {
-            'dateTime': end_date.isoformat(),
-            'timeZone': str(timezone),
+            'dateTime': end_date_utc.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            'timeZone': 'UTC',
         },
     }
 
     try:
         event = service.events().insert(calendarId='primary', body=event).execute()
         print(f"Event created: {event.get('htmlLink')}")
-        print(f"Event time: {start_date.strftime('%I:%M %p')} - {end_date.strftime('%I:%M %p')} {timezone}")
+        print(f"IST Event time: {start_date.strftime('%Y-%m-%d %I:%M %p')} - {end_date.strftime('%I:%M %p')} IST")
+        print(f"UTC Event time: {start_date_utc.strftime('%Y-%m-%d %I:%M %p')} - {end_date_utc.strftime('%I:%M %p')} UTC")
     except Exception as e:
         print(f"Failed to create event: {e}")
-
+        
 def list_events(service):
     now = datetime.utcnow().isoformat() + 'Z'
     events_result = service.events().list(calendarId='primary', timeMin=now,
@@ -96,3 +103,24 @@ def list_events(service):
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
+def main():
+    while True:
+        user_input = input("What would you like to do? ").strip().lower()
+        
+        if user_input.startswith("add event"):
+            service = initialize_calendar()
+            add_event(service)
+        
+        elif user_input.startswith("list events") or user_input.startswith("event details"):
+            service = initialize_calendar()
+            list_events(service)
+        
+        elif user_input == "quit":
+            print("Exiting.")
+            break
+        
+        else:
+            print("Invalid input. Please try again.")
+
+if __name__ == "__main__":
+    main()

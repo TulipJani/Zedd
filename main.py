@@ -1,6 +1,6 @@
 import pygame
 from config import AUDIO_FILE_PATH, BACKGROUND_MUSIC_FILES
-from audio import change_background_music
+from audio import change_background_music, speechRecognition
 from chat import get_response_with_prompt, switch_persona
 from search import handle_search
 from weather import get_weather
@@ -16,6 +16,7 @@ import random
 import shutil
 from colorama import Fore, init
 from blessed import Terminal
+from animation import init_animation
 
 class NullWriter(object):
     def write(self, arg):   
@@ -26,14 +27,16 @@ sys.stdout = sys.__stdout__
 init(autoreset=True)
 pygame.mixer.init()
 ascii_art = """
-                                                           
-###### ###### #####  #####     #    # ###### #####  ###### 
-    #  #      #    # #    #    #    # #      #    # #      
-   #   #####  #    # #    #    ###### #####  #    # #####  
-  #    #      #    # #    #    #    # #      #####  #      
- #     #      #    # #    #    #    # #      #   #  #      
-###### ###### #####  #####     #    # ###### #    # ###### 
-                                                           
+
+ #######    ##       ####     ##              ##   ##    #####    ####     ##### 
+      ##   ####     ##  ##   ####             ##   ##   ##       ##  ##   ##     
+     ##    ## ##   ##   ##   ## ##            ##   ##  ##       ##   ##  ##      
+    ##    ##   ##  ######   ##   ##           #######  ######   ######   ######  
+   ##     #######  ####     #######           ##   ##  ##       ####     ##      
+  ##      ##   ##  ## ##    ##   ##           ##   ##  ##       ## ##    ##      
+ #######  ##   ##  ##  ##   ##   ##           ##   ##  #######  ##  ##   ####### 
+                                                                                 
+
 
 """
 def show_loading_animation():
@@ -52,7 +55,7 @@ def show_loading_animation():
 
         sys.stdout.write(f"\r{progress} {speed_info}".ljust(terminal_width))
         sys.stdout.flush()
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 
     print("\n")
@@ -97,7 +100,7 @@ def handle_help_command():
 
     # Switch persona command
     print(Fore.GREEN + "    - switch to [persona]: Switch to a different assistant persona")
-    print(Fore.GREEN + "      Example: 'switch to Creative Zedd'")
+    print(Fore.GREEN + "      Example: 'switch to Creative Zara'")
 
 
 TODO_FILE = "todo.txt"
@@ -138,7 +141,7 @@ def remind_todo():
         if tasks:
             pending_tasks = "\n".join(f"- {task}" for task in tasks)
             speak_response("You have pending tasks in your to-do list.")
-            print(Fore.GREEN + f"Zedd: You have pending tasks:\n{pending_tasks}")
+            print(Fore.GREEN + f"Zara: You have pending tasks:\n{pending_tasks}")
 
 def play_music(file_path):
     pygame.mixer.music.load(file_path)
@@ -192,12 +195,19 @@ def main():
     is_music_playing = True
     print(Fore.YELLOW + ascii_art)
 
-    print(Fore.GREEN + "Zedd: Hi there, I'm Zedd.")
+    print(Fore.GREEN + "Zara: Hi there, I'm Zara.")
+    first_input = True
+
+    command_counter = 0
+
     while True:
         user_input = input("You: ")
-
-        command_count += 1
-
+        command_counter += 1
+        
+        if first_input:
+            first_input = False
+            init_animation()
+        
         if any(command in user_input for command in ["quit", "exit", "sleep", "deactivate"]):
             terminate_program()
             break
@@ -208,7 +218,7 @@ def main():
         elif user_input.startswith("switch to "):
             persona_name = user_input.split("switch to ")[1].strip().title()
             switch_persona(persona_name)
-            print(Fore.GREEN + f"Zedd: Switched to {persona_name}.")
+            print(Fore.GREEN + f"Zara: Switched to {persona_name}.")
 
 
         elif user_input.startswith("open "):
@@ -217,11 +227,11 @@ def main():
 
         elif "tell me about the weather" in user_input.lower() or "what's the weather today" in user_input.lower():
             response = get_weather()
-            print(Fore.GREEN + f"Zedd: {response}")
+            print(Fore.GREEN + f"Zara: {response}")
 
         elif "what time is it" in user_input or "current time" in user_input:
             current_time = datetime.now().strftime("%H:%M:%S")
-            print(Fore.GREEN + f"Zedd: The current time is {current_time}")
+            print(Fore.GREEN + f"Zara: The current time is {current_time}")
 
         elif user_input.startswith(("play", "stream", "start", "broadcast")):
             command, song_info = user_input.split(maxsplit=1)
@@ -248,82 +258,82 @@ def main():
 
         elif user_input.startswith("search for ") or user_input.startswith("search "):
             results = handle_search(user_input)
-            print(Fore.GREEN + f"Zedd: {results}")
+            print(Fore.GREEN + f"Zara: {results}")
 
         elif user_input.startswith("add ") and "on my todo" in user_input:
             task = user_input[4:user_input.index("on my todo")].strip()
             add_to_todo(task)
-            print(Fore.GREEN + f"Zedd: Added '{task}' to your to-do list.")
+            print(Fore.GREEN + f"Zara: Added '{task}' to your to-do list.")
 
         elif "what's in my todo" in user_input.lower() or "what in my todo" in user_input.lower():
             pending_tasks, completed_tasks = get_todo_list()
             if pending_tasks:
                 tasks_text = "\n".join(f"{i+1}. {task.strip()}" for i, task in enumerate(pending_tasks))
-                print(Fore.GREEN + f"Zedd: You have pending tasks:\n{tasks_text}")
+                print(Fore.GREEN + f"Zara: You have pending tasks:\n{tasks_text}")
                 speak_response(f"You have pending tasks. {tasks_text}")
             else:
-                print(Fore.GREEN + "Zedd: Your to-do list is empty.")
+                print(Fore.GREEN + "Zara: Your to-do list is empty.")
                 speak_response("Your to-do list is empty.")
 
         elif user_input.startswith("complete task "):
             try:
                 task_index = int(user_input.split()[2]) - 1
                 mark_task_completed(task_index)
-                print(Fore.GREEN + f"Zedd: Marked task {task_index + 1} as completed.")
-                speak_response(f"Zedd: Marked task {task_index + 1} as completed.")
+                print(Fore.GREEN + f"Zara: Marked task {task_index + 1} as completed.")
+                speak_response(f"Zara: Marked task {task_index + 1} as completed.")
             except IndexError:
-                print(Fore.GREEN + "Zedd: Task index out of range.")
-                speak_response("Zedd: Task index out of range.")
+                print(Fore.GREEN + "Zara: Task index out of range.")
+                speak_response("Zara: Task index out of range.")
             except ValueError:
-                print(Fore.GREEN + "Zedd: Invalid command format. Use 'complete task <task number>'.")
-                speak_response("Zedd: Invalid command format. Use 'complete task <task number>'.")
+                print(Fore.GREEN + "Zara: Invalid command format. Use 'complete task <task number>'.")
+                speak_response("Zara: Invalid command format. Use 'complete task <task number>'.")
 
         elif user_input.startswith("delete task "):
             try:
                 task_index = int(user_input.split()[2]) - 1
                 delete_task(task_index)
-                print(Fore.GREEN + f"Zedd: Deleted task {task_index + 1}.")
-                speak_response(f"Zedd: Deleted task {task_index + 1}.")
+                print(Fore.GREEN + f"Zara: Deleted task {task_index + 1}.")
+                speak_response(f"Zara: Deleted task {task_index + 1}.")
             except IndexError:
-                print(Fore.GREEN + "Zedd: Task index out of range.")
-                speak_response("Zedd: Task index out of range.")
+                print(Fore.GREEN + "Zara: Task index out of range.")
+                speak_response("Zara: Task index out of range.")
             except ValueError:
-                print(Fore.GREEN + "Zedd: Invalid command format. Use 'delete task <task number>'.")
-                speak_response("Zedd: Invalid command format. Use 'delete task <task number>'.")
+                print(Fore.GREEN + "Zara: Invalid command format. Use 'delete task <task number>'.")
+                speak_response("Zara: Invalid command format. Use 'delete task <task number>'.")
 
         elif user_input.lower() == "pause music":
             pause_music()
-            print(Fore.GREEN + "Zedd: Music paused.")
+            print(Fore.GREEN + "Zara: Music paused.")
 
         elif user_input.lower() == "resume music":
             unpause_music()
-            print(Fore.GREEN + "Zedd: Music playing.")
+            print(Fore.GREEN + "Zara: Music playing.")
         elif user_input.lower() == "change music" :
             change_music()
-            print(Fore.GREEN + "Zedd: Background music changed.")
+            print(Fore.GREEN + "Zara: Background music changed.")
             speak_response("Background music changed.")
 
         elif user_input.startswith("add event to calendar") or user_input.startswith("add event"):
             service = initialize_calendar()
             add_event(service)
 
-
         elif user_input.startswith("list events") or user_input.startswith("event details"):
             service = initialize_calendar()
-            list_events(service) 
+            list_events(service)
+
 
         elif user_input.lower().startswith(("fetch news", "get news", "what's the news")):
-            print(Fore.GREEN + "Zedd: Fetching the latest news. Please wait...")
+            print(Fore.GREEN + "Zara: Fetching the latest news. Please wait...")
             news = fetch_news()
             if news:
-                print(Fore.GREEN + "Zedd: Here are the top headlines in various categories:")
+                print(Fore.GREEN + "Zara: Here are the top headlines in various categories:")
                 for category, headlines in news.items():
                     print(Fore.GREEN + f"\n{category}:")
                     for i, headline in enumerate(headlines, 1):
                         print(Fore.GREEN + f"{i}. {headline}")
                     speak_response(f"Top headline in {category}: {headlines[0]}")
             else:
-                print(Fore.GREEN + "Zedd: I'm sorry, I couldn't fetch any news at the moment.")
+                print(Fore.GREEN + "Zara: I'm sorry, I couldn't fetch any news at the moment.")
                 speak_response("I'm sorry, I couldn't fetch any news at the moment.")
 
         elif user_input.startswith("send") :
@@ -331,16 +341,16 @@ def main():
 
         else:
             generated_response = get_response_with_prompt(user_input)
-            print(Fore.GREEN + f"Zedd: {generated_response}")
+            print(Fore.GREEN + f"Zara: {generated_response}")
 
-        if command_count % 10 == 0:
+        if command_counter % 15 == 0:
             pending_tasks, completed_tasks = get_todo_list()
             if pending_tasks:
                 tasks_text = "\n".join(f"- {task}" for task in pending_tasks)
-                print(Fore.GREEN + f"Zedd: You have pending tasks:\n{tasks_text}")
+                print(Fore.GREEN + f"Zara: You have pending tasks:\n{tasks_text}")
                 speak_response(f"You have pending tasks. {tasks_text}")
             else:
-                print(Fore.GREEN + "Zedd: Your to-do list is empty.")
+                print(Fore.GREEN + "Zara: Your to-do list is empty.")
                 speak_response("Your to-do list is empty.")
 
 def is_interactive():
@@ -358,14 +368,14 @@ if __name__ == "__main__":
     with terminal.hidden_cursor(), terminal.cbreak():
         print(Fore.YELLOW + ascii_art)
         for i in range(2):
-            sys.stdout.write(Fore.GREEN + f"\rZedd: Loading{'.' * i}{' ' * (4 - i)}")
+            sys.stdout.write(Fore.GREEN + f"\rZara: Loading{'.' * i}{' ' * (4 - i)}")
             sys.stdout.flush()
-            time.sleep(0.5)
+            time.sleep(0.25)
             for j in range(i):
                 show_loading_animation()
                 sys.stdout.write(Fore.GREEN + "Loading Succesful")
-                time.sleep(1)
-            time.sleep(3)
+                time.sleep(0)
+            time.sleep(1)
         print(terminal.clear())
 
     

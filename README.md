@@ -41,13 +41,6 @@ Zedd is a sophisticated AI assistant with a unique retro-style terminal interfac
 - **Sound Effects**: Authentic retro computer sounds.
 - **Dynamic Animations**: Matrix-style visual effects.
 
----
-
-## Demo/Launch/Teaser
-
-https://github.com/TulipJani/Zedd/assets/123618918/f894470b-7d68-4a6b-9b1e-a6a95876078b
-
----
 
 ## Installation
 

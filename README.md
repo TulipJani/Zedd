@@ -49,7 +49,7 @@ Zedd is a sophisticated AI assistant with a unique retro-style terminal interfac
 - Python 3.8 or higher
 - pip package manager
 - Virtual environment tool (e.g., `venv`)
-- [openai-edge-tts](https://github.com/openai/edge-tts)
+- [openai-edge-tts](https://github.com/travisvn/openai-edge-tts)
 - Node.js and npm (for `openai-edge-tts`)
 
 ### Step 1: Clone the Repository
